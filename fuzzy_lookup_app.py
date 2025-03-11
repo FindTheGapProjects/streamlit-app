@@ -300,8 +300,8 @@ def fuzzy_lookup(df1, df2, name_col1, name_col2, threshold=70, max_matches=1,
                 continue
     
     # Clear progress displays
-    progress_bar.empty()
-    status_text.empty()
+    progress_bar.progress(1.0)
+    status_text.text("Matching complete!")
     
     # Convert results to DataFrame
     if results:
@@ -542,54 +542,42 @@ def main():
                 if not name_col1 or not name_col2:
                     st.error("Please select columns to match on for both files")
                 else:
-                    # Create a multi-element progress display
-                    with progress_placeholder.container():
-                        # Progress header
+                    with st.container() as progress_container:
                         st.subheader("Matching in progress...")
-                        
-                        # Text progress indicator
                         progress_text = st.empty()
-                        progress_text.text("Preparing data for matching...")
-                        
-                        # Visual progress bar
                         progress_bar = st.progress(0)
-                        
-                        # Elapsed time indicator
                         time_indicator = st.empty()
                         
                         try:
                             # Start the timer
                             start_time = time.time()
-                            last_update_time = start_time
+                            
                             
                             # Update time display
                             def update_time():
-                                current_time = time.time()
-                                elapsed = current_time - start_time
+                                elapsed = time.time() - start_time
                                 time_indicator.text(f"Elapsed time: {elapsed:.1f} seconds")
-                                return current_time
+                                
+                            update_time()
+                            progress_text.text("Preparing data for matching...")
                             
-                            # Initial time display
-                            last_update_time = update_time()
                             
                             # Perform the matching
                             result_df = fuzzy_lookup(df1, df2, name_col1, name_col2, 
                                                    threshold, max_matches,
                                                    clean_data, clean_options)
                             
-                            # Final time update
-                            last_update_time = update_time()
                             
-                            # Calculate elapsed time
-                            elapsed_time = time.time() - start_time
-                            
-                            # Clear the progress display
-                            progress_placeholder.empty()
+                            # Final updates (no need to clear container)
+                            update_time()
+                            progress_text.text("Matching complete!")
+                            progress_bar.progress(1.0)
+
                             
                             if len(result_df) > 0:
                                 # Display the results
                                 st.subheader("Matching Results")
-                                st.write(f"Found {len(result_df)} matches with similarity score >= {threshold} in {elapsed_time:.2f} seconds")
+                                st.write(f"Found {len(result_df)} matches with similarity score >= {threshold}")
                                 
                                 # Reorganize columns for better display:
                                 # 1. Get column names from original dataframes
