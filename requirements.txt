@@ -4,3 +4,4 @@ numpy
 fuzzywuzzy
 python-levenshtein
 openpyxl
+xlsxwriter
