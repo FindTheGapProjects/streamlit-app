@@ -1,0 +1,46 @@
+# Python virtual environments
+venv/
+env/
+.venv/
+ENV/
+virtualenv/
+.Python
+
+# Streamlit-specific
+.streamlit/
+
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables and secrets
+.env
+.env.local
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Temporary files
+temp_uploads/
+*.tmp
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo 

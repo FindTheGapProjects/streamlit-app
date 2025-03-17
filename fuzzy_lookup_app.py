@@ -524,7 +524,7 @@ def main():
             col1, col2, col3 = st.columns(3)
             
             with col1:
-                threshold = st.slider("Minimum similarity score (0-100)", 0, 100, 70,
+                threshold = st.slider("Minimum similarity score (0-100)", 0, 100, 40,
                                     help="Only matches with a similarity score above this threshold will be included")
             
             with col2:
@@ -600,9 +600,9 @@ def main():
                                 # 5. Create the final column order
                                 column_order = [
                                     first_file_name_col, 
-                                    second_file_name_col, 
-                                    'similarity_score',
-                                    'is_match'
+                                    second_file_name_col,
+                                    'is_match',
+                                    'similarity_score'
                                 ] + first_file_cols + second_file_cols
                                 
                                 # Drop matching value columns if they exist
@@ -612,6 +612,13 @@ def main():
                                 
                                 # Reorder columns
                                 result_df = result_df[column_order]
+                                
+                                # Rename columns for better display
+                                rename_dict = {
+                                    first_file_name_col: "Source Supplier Name",
+                                    second_file_name_col: "Target Supplier Name"
+                                }
+                                result_df = result_df.rename(columns=rename_dict)
                                 
                                 # Create a display copy with formatted scores for display only
                                 display_df = result_df.copy()
@@ -636,7 +643,12 @@ def main():
                                     buffer = BytesIO()
                                     
                                     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-                                        result_df.to_excel(writer, index=False, sheet_name='Matches')
+                                        # Convert similarity_score to decimals before writing to Excel
+                                        export_df = result_df.copy()
+                                        if 'similarity_score' in export_df.columns:
+                                            export_df['similarity_score'] = export_df['similarity_score'] / 100  # Convert to decimal for proper percentage formatting
+                                        
+                                        export_df.to_excel(writer, index=False, sheet_name='Matches')
                                         
                                         # Get the xlsxwriter workbook and worksheet objects
                                         workbook = writer.book
@@ -646,8 +658,8 @@ def main():
                                         score_format = workbook.add_format({'num_format': '0.0%'})
                                         
                                         # Find the similarity score column
-                                        if 'similarity_score' in result_df.columns:
-                                            score_col_idx = result_df.columns.get_loc('similarity_score')
+                                        if 'similarity_score' in export_df.columns:
+                                            score_col_idx = export_df.columns.get_loc('similarity_score')
                                             # Apply custom formatting to the similarity score column
                                             worksheet.set_column(score_col_idx, score_col_idx, None, score_format)
                                     
